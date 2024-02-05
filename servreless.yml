@@ -1,0 +1,128 @@
+
+service: stocks-alert-backend
+
+
+custom:
+  allowedHeaders:
+    - Accept
+    - Content-Type
+    - Content-Length
+    - Authorization
+    - X-Amz-Date
+    - X-Api-Key
+    - X-Amz-Security-Token
+    - X-Amz-User-Agent
+    - app_user_id
+    - app_user_name
+
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: eu-west-1
+  stage: prod
+  memorySize: 128
+  timeout: 5
+  endpointType: REGIONAL
+  environment:
+    STOCKS_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    REGION: ${self:provider.region}
+  iamManagedPolicies:
+    - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+    
+functions:
+  add-stock:
+    handler: api/add-stock.handler
+    description: POST /stock
+    events:
+      - http:
+          path: stock
+          method: post
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+
+  update-stock:
+    handler: api/update-stock.handler
+    description: PATCH /stock
+    events:
+      - http:
+          path: stock
+          method: patch
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+
+  get-stocks:
+    handler: api/get-stocks.handler
+    description: GET /stock
+    events:
+      - http:
+          path: stock
+          method: get
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+
+  get-stock:
+    handler: api/get-stock.handler
+    description: GET /stock/s/{stock_ticker}
+    events:
+      - http:
+          path: note/n/{stock_ticker}
+          method: get
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+
+  delete-note:
+    handler: api/delete-stock.handler
+    description: DELETE /stock/s/stock_ticker
+    events:
+      - http:
+          path: note/s/{stock_ticker}
+          method: delete
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+
+resources:
+  Resources:
+    NotesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.NOTES_TABLE}
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+          - AttributeName: stock_ticker
+            AttributeType: S
+          - AttributeName: price
+            AttributeType: N
+          - AttributeName: E/S
+            AttributeType: N
+          - AttributeName: P/E
+            AttributeType: N
+            
+    
+        KeySchema:
+          - AttributeName: user_id
+            KeyType: HASH
+          - AttributeName: stock_ticker
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    GatewayResponseDefault4XX: ## YOU CAN ADD SIMILAR SECTION FOR 5XX ERRORS IF DESIRED
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'       
