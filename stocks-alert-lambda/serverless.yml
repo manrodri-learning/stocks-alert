@@ -30,15 +30,14 @@ provider:
   environment:
     STOCKS_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     REGION: ${self:provider.region}
-    SNS_TOPIC:  ${self:service}-${opt:stage, self:provider.stage}
+    SNS_TOPIC: ${self:service}-${opt:stage, self:provider.stage}
 
 functions:
   hello:
     handler: handler.hello
     events:
       - schedule: rate(1 day)
-    environment:
-      mySnsTopicArn: ${self:custom.mySnsTopicArn.${self:provider.stage}}
+    
 resources:
   Resources:
     MySNSTopicResource:
