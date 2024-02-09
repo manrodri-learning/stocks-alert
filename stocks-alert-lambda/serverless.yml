@@ -1,0 +1,47 @@
+service: stock-alert-service
+frameworkVersion: '3'
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    zip: true
+    useDownloadCache: false
+    useStaticCache: false
+      
+  mySnsTopic: "${self:service}-${self:provider.stage}-sns-consume"
+  mySnsTopicArn:
+    local:
+      "arn:aws:sns:us-east-1:123456789012:${self:custom.mySnsTopic}"
+    dev:
+      { "Fn::Join" : ["", ["arn:aws:sns:${self:provider.region}:", { "Ref" : "AWS::AccountId" }, ":${self:custom.mySnsTopic}" ] ]  }
+    prod:
+     { "Fn::Join" : ["", ["arn:aws:sns:${self:provider.region}:", { "Ref" : "AWS::AccountId" }, ":${self:custom.mySnsTopic}" ] ]  }
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: eu-west-1
+  stage: dev
+  memorySize: 128
+  timeout: 5
+  endpointType: REGIONAL
+  environment:
+    STOCKS_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    REGION: ${self:provider.region}
+    SNS_TOPIC: ${self:service}-${opt:stage, self:provider.stage}
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - schedule: rate(1 day)
+    
+resources:
+  Resources:
+    MySNSTopicResource:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:provider.environment.SNS_TOPIC}
+
