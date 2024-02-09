@@ -20,6 +20,9 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: install serverless framework and plugins
         run: |
           echo installing serverless
