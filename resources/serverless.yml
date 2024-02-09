@@ -1,0 +1,47 @@
+service: stock-alert-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: eu-west-1
+  stage: dev
+  memorySize: 128
+  timeout: 5
+  endpointType: REGIONAL
+  environment:
+    STOCKS_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    REGION: ${self:provider.region}
+    SNS_TOPIC: ${self:service}-${opt:stage, self:provider.stage}
+
+
+resources:
+  Resources:
+    NotesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.STOCKS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+          - AttributeName: ticker
+            AttributeType: S
+          - AttributeName: price
+            AttributeType: N
+          - AttributeName: CFW_operations
+            AttributeType: N
+          - AttributeName: EPS
+            AttributeType: N
+          - AttributeName: P/E
+            AttributeType: N
+        KeySchema:
+          - AttributeName: ticker
+            KeyType: HASH
+          - AttributeName: user_id
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
