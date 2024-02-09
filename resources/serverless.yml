@@ -35,3 +35,8 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    # MySNSTopicResource:
+    #   Type: AWS::SNS::Topic
+    #   Properties:
+    #     TopicName: ${self:provider.environment.SNS_TOPIC}
