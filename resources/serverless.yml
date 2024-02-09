@@ -25,18 +25,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: user_id
             AttributeType: S
-          - AttributeName: timestamp
-            AttributeType: N
           - AttributeName: ticker
             AttributeType: S
-          - AttributeName: price
-            AttributeType: N
-          - AttributeName: CFW_operations
-            AttributeType: N
-          - AttributeName: EPS
-            AttributeType: N
-          - AttributeName: P/E
-            AttributeType: N
         KeySchema:
           - AttributeName: ticker
             KeyType: HASH
