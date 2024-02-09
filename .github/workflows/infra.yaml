@@ -1,0 +1,36 @@
+name: CI serverless app
+permissions: write-all
+
+on:
+  workflow_dispatch:
+    inputs: 
+      action: 
+        required: true
+        default: 'deploy'
+        type: choice
+        options:
+          - deploy
+          - remove
+         
+
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ENVIRONMENT_STAGE: PROD
+
+jobs:
+  infra:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install sls
+        run: npm i -g serverless
+      - uses: actions/checkout@v3
+      - name: deploy to AWS
+        working-directory: resources
+        run: |
+          echo "Deployment started on $(date)"
+          echo Deploying with the serverless framework to stage $ENVIRONMENT_STAGE
+          sls ${{ inputs.action }}
+      - name: Post build step
+        run: echo "Deployment completed on $(date)"

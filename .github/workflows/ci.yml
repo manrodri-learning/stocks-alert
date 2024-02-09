@@ -19,20 +19,23 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: install serverless framework and plugins
         run: |
           echo installing serverless
           npm i -g serverless
-          
 
       - uses: actions/checkout@v3
-      - name: npm install
+      
+      - name: install sls plugins
+        working-directory: stocks-alert-lambda 
         run: |
           serverless plugin install -n serverless-python-requirements
-          echo 'installing dependencies'
-          npm ci
 
       - name: deploy to AWS
+        working-directory: stocks-alert-lambda
         run: |
           echo "Deployment started on $(date)"
           echo Deploying with the serverless framework to stage $ENVIRONMENT_STAGE
