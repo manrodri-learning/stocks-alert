@@ -1,4 +1,4 @@
-name: CI serverless app
+name: resources
 permissions: write-all
 
 on:
