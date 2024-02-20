@@ -1,5 +1,8 @@
 name: CI alert service
 on:
+  push:
+    branches:
+      - docker-api
   workflow_dispatch:
 
 permissions: write-all
