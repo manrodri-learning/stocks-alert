@@ -1,11 +1,24 @@
 import { Alert, Item  } from './alert/'
 
+console.log(JSON.stringify(process.env.ITEM))
+// const item = JSON.parse(process.env.ITEM!) as Item
+const item = {
+    ticker: 'APPL',
+    price: 23.33,
+    earningsPerShare: 1.34,
+    priceToEarnings: 76.32
+}
 
-const item = JSON.parse(process.env.item!) as Item
-const metricsToAlert = process.env.metricsToAlert!.split(',')
+export const main =async () => {
+    console.log(Alert.prototype)
+    
+    const alert = new Alert(`-alert`, item)
+    try{
+        const response = await alert.send()
+    } catch(error: any){
+        console.log(error)
+        throw new Error(error)
+    } 
+}   
 
-
-const alert = new Alert(`${item.ticker}-alert`, item)
-alert.send()
-.then(res => console.log(res))
-.catch(err => console.error(err))
+main()
