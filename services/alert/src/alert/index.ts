@@ -40,6 +40,7 @@ export class Alert {
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
         topicArn: this.topicArn,
+        message: `price threshold reached!\n Price: ${this.item.price}`
     }
   }
 
