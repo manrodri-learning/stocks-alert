@@ -58,7 +58,9 @@
         "url": "git@github.com:manrodri-learning/stocks-alert.git"
     },
     "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.523.0",
         "@aws-sdk/client-sns": "^3.516.0",
+        "@aws-sdk/lib-dynamodb": "^3.523.0",
         "aws-sdk": "^2.326.0",
         "moment": "^2.22.2",
         "uuid": "^3.3.2"

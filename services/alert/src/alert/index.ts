@@ -29,7 +29,6 @@ export class Alert {
    constructor(name: string, item: Item) {
     this.name = name;
     this.item = item;
-    this.id = uuidv4()
 
   }
 
